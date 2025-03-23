@@ -5,9 +5,9 @@ module "eks" {
   cluster_name    = "wms-cluster"
   cluster_version = "1.29"
 
-  subnet_ids      = [
-    aws_subnet.public_subnet.id,
-    aws_subnet.private_subnet.id,
+  subnet_ids = [
+    aws_subnet.private_subnet_1.id,
+    aws_subnet.private_subnet_2.id
   ]
   vpc_id          = aws_vpc.main.id
 
