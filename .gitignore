@@ -1,0 +1,31 @@
+# Terraform 관련
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+terraform.tfvars
+*.tfvars
+*.tfvars.json
+*.tfplan
+*.backup
+.crash
+crash.log
+override.tf
+override.tf.json
+
+# 민감한 파일
+*.pem
+*.key
+*.secret
+*.env
+
+# IDE/에디터 관련
+.vscode/
+
+# 시스템 파일
+.DS_Store
+Thumbs.db
+
+# 기타 로그
+*.log
+*.bak
