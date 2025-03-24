@@ -1,14 +1,10 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-
-  required_version = ">= 1.1.0"
+# main.tf
+provider "aws" {
+  region = "us-east-1"
 }
 
-provider "aws" {
-  region = var.aws_region
+module "vpc" {
+  source   = "./modules/vpc"
+  name     = "wms"
+  vpc_cidr = "10.0.0.0/16"
 }
