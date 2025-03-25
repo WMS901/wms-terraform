@@ -5,12 +5,15 @@ module "eks" {
   cluster_name    = var.cluster_name
   cluster_version = var.cluster_version
 
-  enable_cluster_creator_admin_permissions = true
-  cluster_endpoint_public_access           = true
+  enable_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
+
+  cluster_endpoint_public_access = true
 
   vpc_id                   = var.vpc_id
   subnet_ids               = var.private_subnet_ids
   control_plane_subnet_ids = var.private_subnet_ids
+
+  access_entries = var.access_entries
 
   cluster_addons = {
     coredns                = {}
