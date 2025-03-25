@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: postgres
+  tag: "15"
+  pullPolicy: IfNotPresent
+
+auth:
+  username: "user1"
+  password: "user1"
+  database: "inventory_db"
+
+persistence:
+  enabled: true
+  existingClaim: "postgres-inventory-pvc"
+  storageClass: "nfs-storage"
+  size: 10Gi

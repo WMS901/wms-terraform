@@ -1,0 +1,20 @@
+replicaCount: 1
+
+image:
+  repository: chamchimayo/inbound-service
+  tag: "v1.0.20"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 1050
+
+env:
+  SERVER_PORT: 1050
+  MONGO_HOST: mongo-inbound.mongo.svc.cluster.local  #ip -> DNS 기반 서비스 이름 사용
+  MONGO_PORT: 27017
+  MONGO_USER: user1
+  MONGO_PASS: user1
+  MONGO_DB: inbound_db
+  MONGO_AUTH_DB: admin
+

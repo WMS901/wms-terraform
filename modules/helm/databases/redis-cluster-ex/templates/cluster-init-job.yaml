@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: redis-cluster-init
+  namespace: redis
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: redis-cli
+          image: redis:7.2
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              echo "Waiting for Redis nodes to be ready..."
+              sleep 10
+              redis-cli --cluster create \
+                redis-cluster-0.redis-cluster.redis.svc.cluster.local:6379 \
+                redis-cluster-1.redis-cluster.redis.svc.cluster.local:6379 \
+                redis-cluster-2.redis-cluster.redis.svc.cluster.local:6379 \
+                redis-cluster-3.redis-cluster.redis.svc.cluster.local:6379 \
+                redis-cluster-4.redis-cluster.redis.svc.cluster.local:6379 \
+                redis-cluster-5.redis-cluster.redis.svc.cluster.local:6379 \
+                --cluster-replicas 1 --cluster-yes
+
