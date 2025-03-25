@@ -18,8 +18,6 @@ override.tf.json
 *.key
 *.secret
 *.env
-**/dev.tf
-dev-*.tf
 
 # IDE/에디터 관련
 .vscode/

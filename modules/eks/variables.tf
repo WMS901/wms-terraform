@@ -1,25 +1,24 @@
 variable "cluster_name" {
+  description = "EKS 클러스터 이름"
   type        = string
-  description = "EKS cluster name"
 }
 
 variable "cluster_version" {
+  description = "Kubernetes 버전"
   type        = string
-  default     = "1.29"
-  description = "Kubernetes version"
-}
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "List of subnet IDs for EKS"
 }
 
 variable "vpc_id" {
+  description = "VPC ID"
   type        = string
-  description = "VPC ID for the cluster"
+}
+
+variable "private_subnet_ids" {
+  description = "프라이빗 서브넷 ID 목록"
+  type        = list(string)
 }
 
 variable "key_name" {
+  description = "EC2 키 페어 이름"
   type        = string
-  description = "EC2 key pair name"
 }
