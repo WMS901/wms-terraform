@@ -16,8 +16,6 @@ module "bastion" {
   instance_type     = "t2.micro"
   public_subnet_id  = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
   vpc_id            = data.terraform_remote_state.vpc.outputs.vpc_id
-  public_key_path   = "C:/Users/soldesk/Downloads/wms_key.pub"
-  key_name          = "wms-key"
   my_ip_cidr        = "180.80.107.4/32"
 }
 
