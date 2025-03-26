@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap # k8s에서 Kong의 설정을 저장하기 위한 ConfigMap.
+metadata:
+  name: kong-config #kong-config라는 이름으로 생성
+  namespace: kong #kong 네임스페이스에 배포
+data:
+  kong.yml: | #DBless 모드에서 사용하는 Kong 선언형 설정 파일임(kong.yml)
+    _format_version: "3.0" # Kong 3.0 버전
+    services: #각 서비스에 대한 트래픽 경로(Route) 를 정의
+      - name: inventory-service #서비스 이름
+        url: http://inventory-service.wms.svc.cluster.local:1050 #내부 서비스 URL
+        routes: #라우트(Route) /api/inventory → inventory-service로 연결
+          - name: inventory-api
+            paths:
+              - /api/inventory
+      - name: user-service
+        url: http://user-service.wms.svc.cluster.local:1040
+        routes: #/api/user → user-service로 연결
+          - name: user-api
+            paths:
+              - /api/user
+    plugins: #JWT 플러그인 활성화하여 API 요청 시 토큰 인증을 적용.
+      - name: jwt
+        config:
+          key_claim_name: "iss" #JWT 토큰의 iss(발급자) 값을 기준으로 인증
+          secret_is_base64: false #JWT Secret 키를 Base64 인코딩하지 않음.
+

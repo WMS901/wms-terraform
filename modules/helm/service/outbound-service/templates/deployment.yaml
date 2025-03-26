@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: inbound-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: SERVER_PORT
+              value: "{{ .Values.env.SERVER_PORT }}"
+            - name: MONGO_HOST
+              value: "{{ .Values.env.MONGO_HOST }}"
+            - name: MONGO_PORT
+              value: "{{ .Values.env.MONGO_PORT }}"
+            - name: MONGO_USER
+              value: "{{ .Values.env.MONGO_USER }}"
+            - name: MONGO_PASS
+              value: "{{ .Values.env.MONGO_PASS }}"
+            - name: MONGO_DB
+              value: "{{ .Values.env.MONGO_DB }}"
+            - name: MONGO_AUTH_DB
+              value: "{{ .Values.env.MONGO_AUTH_DB }}"
+

@@ -1,0 +1,46 @@
+## Redis Cluster 설정
+cluster:
+  enabled: true
+  nodes: 6
+  replicas: 1  # 3개의 마스터, 3개의 슬레이브 유지
+
+## Redis 설정
+redis:
+  configmap:
+    redis.conf: |
+      port 6379
+      cluster-enabled yes
+      cluster-config-file /data/nodes.conf
+      cluster-node-timeout 5000
+      appendonly yes
+      protected-mode no
+      cluster-announce-ip "$(POD_IP)"
+      cluster-announce-port 6379
+      cluster-announce-bus-port 16379
+      cluster-require-full-coverage no  # 클러스터가 완전하지 않아도 동작하도록 설정
+
+## Service 설정
+service:
+  type: ClusterIP
+  clusterIP: None  # Headless Service 유지
+
+## 클러스터 초기화 관련 설정
+init:
+  enabled: true
+  command:
+    - "/bin/sh"
+    - "-c"
+    - |
+      set -e
+      echo "Waiting for Redis nodes to be ready..."
+      sleep 10  # 초기 Redis 노드들이 실행될 때까지 대기
+      echo "Creating Redis Cluster..."
+      redis-cli --cluster create \
+        redis-cluster-0.redis-cluster.redis.svc.cluster.local:6379 \
+        redis-cluster-1.redis-cluster.redis.svc.cluster.local:6379 \
+        redis-cluster-2.redis-cluster.redis.svc.cluster.local:6379 \
+        redis-cluster-3.redis-cluster.redis.svc.cluster.local:6379 \
+        redis-cluster-4.redis-cluster.redis.svc.cluster.local:6379 \
+        redis-cluster-5.redis-cluster.redis.svc.cluster.local:6379 \
+        --cluster-replicas 1 --cluster-yes
+

@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  repository: mongo
+  tag: "6.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 27018  # ✅ 27018 포트 사용
+
+persistence:
+  enabled: true
+  storageClass: "nfs-storage"
+  accessModes:
+    - ReadWriteMany
+  size: 10Gi
+  volumeName: "mongo-outbound-pv"
+
+env:
+  MONGO_INITDB_ROOT_USERNAME: "user1"
+  MONGO_INITDB_ROOT_PASSWORD: "user1"
+  MONGO_INITDB_DATABASE: "outbound_db"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+

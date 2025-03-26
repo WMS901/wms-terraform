@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-inventory-pvc
+  labels:
+    app.kubernetes.io/name: postgres-inventory
+    app.kubernetes.io/instance: postgres-inventory
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: postgres-inventory
+    meta.helm.sh/release-namespace: postgres
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-storage
+  volumeName: postgres-inventory-pv

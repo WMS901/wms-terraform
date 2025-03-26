@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-outbound-pvc
+  labels:
+    app.kubernetes.io/name: mongo-outbound
+    app.kubernetes.io/instance: mongo-outbound
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: mongo-outbound
+    meta.helm.sh/release-namespace: mongo
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-storage
+  volumeName: mongo-outbound-pv

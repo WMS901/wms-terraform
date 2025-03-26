@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: mongo
+  tag: "6.0"
+  pullPolicy: IfNotPresent
+
+auth:
+  username: "user1"
+  password: "user1"
+  database: "inbound_db"
+
+persistence:
+  enabled: true
+  existingClaim: "mongo-inbound-pvc"
+  storageClass: "nfs-storage"
+  size: 10Gi

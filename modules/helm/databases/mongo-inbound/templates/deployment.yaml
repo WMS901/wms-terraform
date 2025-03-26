@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "mongo-inbound.fullname" . }}
+spec:
+  serviceName: {{ include "mongo-inbound.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "mongo-inbound.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "mongo-inbound.fullname" . }}
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:6.0
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "user1"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "user1"
+            - name: MONGO_INITDB_DATABASE
+              value: "inbound_db"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-storage
+          persistentVolumeClaim:
+            claimName: mongo-inbound-pvc
+
