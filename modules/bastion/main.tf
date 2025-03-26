@@ -35,7 +35,10 @@ resource "aws_instance" "bastion" {
 
   user_data = <<-EOF
               #!/bin/bash
-              yum install -y tree git curl unzip
+              # 실패 시 즉시 중단하고, 실행 로그 출력
+              set -ex
+
+              yum install -y tree git curl unzip --allowerasing
 
               # kubectl 설치
               curl -LO "https://dl.k8s.io/release/v1.31.0/bin/linux/amd64/kubectl"
@@ -47,7 +50,7 @@ resource "aws_instance" "bastion" {
               chown -R ec2-user:ec2-user /home/ec2-user/.kube
 
               # ec2-user로 kubeconfig 구성
-              su - ec2-user -c 'aws eks update-kubeconfig --region us-east-1 --name wms-cluster'
+              # su - ec2-user -c 'aws eks update-kubeconfig --region us-east-1 --name wms-cluster'
 
               # Helm 설치
               curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
