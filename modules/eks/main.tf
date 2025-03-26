@@ -11,7 +11,7 @@ resource "aws_security_group" "bastion" {
   name        = "wms-bastion-sg"
   description = "Allow bastion to access EKS nodes"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
-  
+
   ingress {
     from_port   = 22
     to_port     = 22
@@ -26,7 +26,6 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # ingress 규칙은 EKS 모듈에서 따로 정의하므로 이 SG에서는 생략 가능
   tags = {
     Name = "wms-bastion-sg"
   }

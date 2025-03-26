@@ -13,7 +13,6 @@ output "cluster_certificate_authority_data" {
   value       = module.eks.cluster_certificate_authority_data
 }
 
-# Note: For node group details, use outputs provided directly by the module
 output "node_group_output" {
   description = "All outputs for eks_managed_node_groups"
   value       = module.eks.eks_managed_node_groups
