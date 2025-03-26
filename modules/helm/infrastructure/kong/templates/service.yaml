@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-proxy #서비스 이름
+  namespace: kong
+spec:
+  type: ClusterIP #서비스 타입
+  ports:
+    - name: proxy #80 → 8000: HTTP 요청 처리
+      port: 80
+      targetPort: 8000
+    - name: proxy-ssl #443 → 8443: HTTPS 요청 처리
+      port: 443
+      targetPort: 8443
+  selector:
+    app: kong
+
+---
+#kubectl port-forward svc/kong-admin 8001:8001 -n kong 실행 시
+#로컬에서 http://localhost:8001 로 Kong 관리 API 접근 가능.
+#Admin API는 보안 위험이 있기 때문에 공개하지 않고 내부 접근만 가능하도록 설정.
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-admin
+  namespace: kong
+spec:
+  type: ClusterIP
+  ports: #포트 Kong Admin API
+    - name: admin
+      port: 8001
+      targetPort: 8001
+  selector:
+    app: kong
+---
+#Prometheus가 kong-metrics 서비스로 접근하여 API 트래픽 및 요청 지연 시간 모니터링 가능.
+#Prometheus 설정에서 다음과 같이 targets을 추가하면 Kong 데이터를 수집 가능
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-metrics
+  namespace: kong
+spec:
+  type: ClusterIP
+  ports: #Prometheus 메트릭 수집
+    - name: metrics
+      port: 8100
+      targetPort: 8100
+  selector:
+    app: kong
+

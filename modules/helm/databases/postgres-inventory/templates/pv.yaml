@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-inventory-pv
+  labels:
+    app.kubernetes.io/name: postgres-inventory
+    app.kubernetes.io/instance: postgres-inventory
+    app.kubernetes.io/managed-by: Helm  # ✅ Helm이 관리할 수 있도록 설정
+  annotations:
+    meta.helm.sh/release-name: postgres-inventory  # ✅ Helm 릴리즈 이름 설정
+    meta.helm.sh/release-namespace: postgres  # ✅ Helm 네임스페이스 설정
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage  # ✅ StatefulSet과 PVC에서 참조할 StorageClass
+  nfs:
+    path: /database/postgres-inventory  # ✅ 변경된 NFS 경로 적용
+    server: 195.168.9.123

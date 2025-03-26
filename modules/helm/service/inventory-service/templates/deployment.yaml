@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: inventory-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: SERVER_PORT
+              value: "{{ .Values.env.SERVER_PORT }}"
+            - name: DB_URL
+              value: "{{ .Values.env.DB_URL }}"
+            - name: DB_USERNAME
+              value: "{{ .Values.env.DB_USERNAME }}"
+            - name: DB_PASSWORD
+              value: "{{ .Values.env.DB_PASSWORD }}"
+            - name: DB_DRIVER
+              value: "{{ .Values.env.DB_DRIVER }}"
+            # Kafka 환경 변수 추가
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ .Values.env.SPRING_KAFKA_BOOTSTRAP_SERVERS }}"
+            - name: SPRING_KAFKA_CONSUMER_GROUP_ID
+              value: "{{ .Values.env.SPRING_KAFKA_CONSUMER_GROUP_ID }}"
+            - name: SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET
+              value: "{{ .Values.env.SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET }}"
+            - name: SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER
+              value: "{{ .Values.env.SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER }}"
+            - name: SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER
+              value: "{{ .Values.env.SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER }}"
+            - name: SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES
+              value: "{{ .Values.env.SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES }}"
+

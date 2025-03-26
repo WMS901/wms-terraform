@@ -1,8 +1,29 @@
-variable "name" {}
-variable "ami_id" {}
-variable "instance_type" {}
-variable "public_subnet_id" {}
-variable "vpc_id" {}
-variable "public_key_path" {}
-variable "key_name" {}
-variable "my_ip_cidr" {}
+variable "name" {
+  type        = string
+  description = "Name prefix"
+}
+
+variable "ami_id" {
+  type        = string
+  description = "AMI ID for EC2 instance"
+}
+
+variable "instance_type" {
+  type        = string
+  description = "EC2 instance type"
+}
+
+variable "public_subnet_id" {
+  type        = string
+  description = "Public subnet ID"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID"
+}
+
+variable "my_ip_cidr" {
+  type        = string
+  description = "Your local IP CIDR to allow SSH"
+}

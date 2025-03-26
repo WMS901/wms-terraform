@@ -18,6 +18,10 @@ output "cluster_security_group_id" {
   value       = module.eks.cluster_security_group_id
 }
 
+output "cluster_primary_security_group_id" {
+  value = module.eks.cluster_primary_security_group_id
+}
+
 output "node_group_role_arn" {
   description = "ARN of the IAM role assigned to the node group"
   value       = module.eks.eks_managed_node_groups.default.iam_role_arn

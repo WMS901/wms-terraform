@@ -32,11 +32,16 @@ variable "access_entries" {
     kubernetes_groups   = list(string)
     policy_associations = list(any)
   }))
-  default = {}
 }
 
 variable "enable_cluster_creator_admin_permissions" {
   description = "Whether to enable cluster creator as admin"
   type        = bool
   default     = true
+}
+
+variable "bastion_sg_id" {
+  description = "Security Group ID of the bastion host to allow traffic to EKS nodes"
+  type        = string
+  default     = null
 }

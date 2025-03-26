@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-outbound-pv
+  labels:
+    app.kubernetes.io/name: mongo-outbound
+    app.kubernetes.io/instance: mongo-outbound
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: mongo-outbound
+    meta.helm.sh/release-namespace: mongo
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    path: /database/mongo-outbound  # ✅ 변경된 NFS 경로
+    server: 195.168.9.123
+
