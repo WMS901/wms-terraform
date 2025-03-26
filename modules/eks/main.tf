@@ -1,3 +1,23 @@
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config = {
+    bucket = "sol-wms-terraform-states"
+    key    = "vpc/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+resource "aws_security_group" "bastion" {
+  name        = "wms-bastion-sg"
+  description = "Allow bastion to access EKS nodes"
+  vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+
+  # ingress 규칙은 EKS 모듈에서 따로 정의하므로 이 SG에서는 생략 가능
+  tags = {
+    Name = "wms-bastion-sg"
+  }
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.31"
@@ -8,11 +28,27 @@ module "eks" {
   enable_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
   cluster_endpoint_public_access           = true
 
-  vpc_id                   = var.vpc_id
-  subnet_ids               = var.private_subnet_ids
-  control_plane_subnet_ids = var.private_subnet_ids
+  vpc_id                   = data.terraform_remote_state.vpc.outputs.vpc_id
+  subnet_ids               = data.terraform_remote_state.vpc.outputs.private_eks_subnet_ids
+  control_plane_subnet_ids = data.terraform_remote_state.vpc.outputs.private_eks_subnet_ids
 
-  access_entries = var.access_entries
+  access_entries = {
+    ec2_ssm_admin = {
+      principal_arn     = "arn:aws:iam::816069155414:role/EC2-SSM"
+      type              = "STANDARD"
+      kubernetes_groups = []
+
+      policy_associations = [
+        {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      ]
+    }
+  }
 
   cluster_addons = {
     coredns                = {}
@@ -43,7 +79,7 @@ module "eks" {
       from_port                = 443
       to_port                  = 443
       type                     = "ingress"
-      source_security_group_id = var.bastion_sg_id
+      source_security_group_id = aws_security_group.bastion.id
     }
   }
 
