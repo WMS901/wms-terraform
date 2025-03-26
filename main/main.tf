@@ -16,8 +16,6 @@ module "bastion" {
   instance_type     = "t2.micro"
   public_subnet_id  = module.vpc.public_subnet_ids[0]
   vpc_id            = module.vpc.vpc_id
-  public_key_path   = "C:/Users/soldesk/Downloads/wms_key.pub"
-  key_name          = "wms-key"
   my_ip_cidr        = "180.80.107.4/32"
 }
 
@@ -29,7 +27,8 @@ module "eks" {
 
   vpc_id             = module.vpc.vpc_id
   private_subnet_ids = module.vpc.private_eks_subnet_ids
-  key_name           = "wms-key"
+  key_name           = "wms_key"
+  bastion_sg_id      = module.bastion.bastion_sg_id
 
   enable_cluster_creator_admin_permissions = false
 
@@ -44,10 +43,21 @@ module "eks" {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
           access_scope = {
-            type = "cluster" # ✅ 필수! 기본값으로 클러스터 전체 권한
+            type = "cluster"
           }
         }
       ]
     }
   }
+  
+}
+
+resource "aws_security_group_rule" "allow_bastion_to_eks_control_plane" {
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  security_group_id        = module.eks.cluster_primary_security_group_id
+  source_security_group_id = module.bastion.bastion_sg_id
+  description              = "Allow Bastion to access EKS API"
 }
