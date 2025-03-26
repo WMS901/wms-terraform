@@ -8,15 +8,15 @@ resource "helm_release" "alb_controller" {
   version    = "1.7.1"
 
   values = [file("${path.module}/../../modules/helm-chart/infrastructure/alb-ingress/values.yaml")]
-  
+
   set {
     name  = "clusterName"
-    value = var.cluster_name
+    value = "wms-cluster"
   }
 
   set {
     name  = "region"
-    value = var.region
+    value = "us-east-1"
   }
 
   set {
