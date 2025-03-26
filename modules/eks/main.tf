@@ -6,8 +6,7 @@ module "eks" {
   cluster_version = var.cluster_version
 
   enable_cluster_creator_admin_permissions = var.enable_cluster_creator_admin_permissions
-
-  cluster_endpoint_public_access = true
+  cluster_endpoint_public_access           = true
 
   vpc_id                   = var.vpc_id
   subnet_ids               = var.private_subnet_ids
@@ -23,7 +22,7 @@ module "eks" {
   }
 
   eks_managed_node_group_defaults = {
-    instance_types = ["t3.medium", "t3.large"]
+    instance_types = ["t3.medium"]
   }
 
   eks_managed_node_groups = {
@@ -34,6 +33,17 @@ module "eks" {
       min_size       = 1
       max_size       = 2
       key_name       = var.key_name
+    }
+  }
+
+  node_security_group_additional_rules = {
+    allow_bastion_to_nodes = {
+      description              = "Allow bastion to connect to EKS nodes (TCP 443)"
+      protocol                 = "tcp"
+      from_port                = 443
+      to_port                  = 443
+      type                     = "ingress"
+      source_security_group_id = var.bastion_sg_id
     }
   }
 

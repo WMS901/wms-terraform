@@ -48,8 +48,6 @@ module "bastion" {
   instance_type     = "t2.micro"
   public_subnet_id  = data.aws_subnet.public.id
   vpc_id            = data.aws_vpc.selected.id
-  public_key_path   = "C:/Users/soldesk/Downloads/wms_key.pub"
-  key_name          = "wms-key"
   my_ip_cidr        = "180.80.107.4/32"
 }
 
