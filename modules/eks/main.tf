@@ -11,6 +11,20 @@ resource "aws_security_group" "bastion" {
   name        = "wms-bastion-sg"
   description = "Allow bastion to access EKS nodes"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
+  
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip_cidr]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # ingress 규칙은 EKS 모듈에서 따로 정의하므로 이 SG에서는 생략 가능
   tags = {
@@ -41,7 +55,6 @@ module "eks" {
       policy_associations = [
         {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-
           access_scope = {
             type = "cluster"
           }
@@ -79,6 +92,17 @@ module "eks" {
       from_port                = 443
       to_port                  = 443
       type                     = "ingress"
+      source_security_group_id = aws_security_group.bastion.id
+    }
+  }
+
+  cluster_security_group_additional_rules = {
+    allow_bastion_https = {
+      type                     = "ingress"
+      protocol                 = "tcp"
+      from_port                = 443
+      to_port                  = 443
+      description              = "Allow Bastion to access Control Plane"
       source_security_group_id = aws_security_group.bastion.id
     }
   }

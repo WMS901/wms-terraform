@@ -21,3 +21,9 @@ variable "key_name" {
   description = "EC2 key pair name for worker nodes"
   default = "wms_key"
 }
+
+variable "my_ip_cidr" {
+  type        = string
+  description = "CIDR block of your local IP for SSH access"
+  default     = "180.80.107.4/32"
+}
