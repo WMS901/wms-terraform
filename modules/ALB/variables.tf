@@ -1,6 +1,7 @@
 variable "name" {
   description = "ALB 이름"
   type        = string
+  default     = "aws-alb"
 }
 
 variable "security_group_id" {
