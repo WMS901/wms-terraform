@@ -51,3 +51,8 @@ output "node_group_output" {
   description = "All outputs for eks_managed_node_groups"
   value       = module.eks.eks_managed_node_groups
 }
+
+output "bastion_sg_id" {
+  value       = aws_security_group.bastion.id
+  description = "Security group ID that allows Bastion to connect to EKS nodes"
+}
