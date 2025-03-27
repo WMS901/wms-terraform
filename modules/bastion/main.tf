@@ -51,6 +51,14 @@ resource "aws_instance" "bastion" {
 
               # ec2-user로 kubeconfig 구성
               # su - ec2-user -c 'aws eks update-kubeconfig --region us-east-1 --name wms-cluster'
+              
+              # eksctl 설치
+              curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" -o eksctl.tar.gz
+              tar -xzf eksctl.tar.gz
+              mv eksctl /usr/local/bin/
+              chmod +x /usr/local/bin/eksctl
+              export AWS_REGION=us-east-1
+              eksctl version
 
               # Helm 설치
               curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash

@@ -27,3 +27,7 @@ variable "my_ip_cidr" {
   description = "CIDR block of your local IP for SSH access"
   default     = "180.80.107.4/32"
 }
+
+# variable "region" {
+  
+# }
