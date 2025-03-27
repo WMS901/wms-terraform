@@ -24,18 +24,19 @@ data "aws_key_pair" "existing" {
   key_name = "wms_key"
 }
 
-resource "aws_instance" "bastion" {
-  ami                         = var.ami_id
-  instance_type               = var.instance_type
-  subnet_id                   = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
-  vpc_security_group_ids      = [data.terraform_remote_state.eks.outputs.bastion_sg_id]
-  associate_public_ip_address = true
-  key_name                    = data.aws_key_pair.existing.key_name
-  iam_instance_profile        = "EC2-SSM"
+module "bastion" {
+  source = "../../../modules/ec2"
+
+  name                  = "wms-bastion"
+  ami_id                = "ami-08b5b3a93ed654d19"
+  instance_type         = "t2.micro"
+  subnet_id             = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
+  vpc_security_group_ids = [data.terraform_remote_state.eks.outputs.bastion_sg_id]
+  key_name              = data.aws_key_pair.existing.key_name
+  iam_instance_profile  = "EC2-SSM"
 
   user_data = <<-EOF
               #!/bin/bash
-              # 실패 시 즉시 중단하고, 실행 로그 출력
               set -ex
 
               yum install -y tree git curl unzip --allowerasing
@@ -50,8 +51,8 @@ resource "aws_instance" "bastion" {
               chown -R ec2-user:ec2-user /home/ec2-user/.kube
 
               # ec2-user로 kubeconfig 구성
-              # su - ec2-user -c 'aws eks update-kubeconfig --region us-east-1 --name wms-cluster'
-              
+              su - ec2-user -c 'aws eks update-kubeconfig --region us-east-1 --name wms-cluster'
+
               # eksctl 설치
               curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" -o eksctl.tar.gz
               tar -xzf eksctl.tar.gz
@@ -69,9 +70,8 @@ resource "aws_instance" "bastion" {
               cd /
               git clone https://github.com/WMS901/aws-helm-charts.git
               chown -R ec2-user:ec2-user /aws-helm-charts
-            EOF
-
-  tags = {
-    Name = "${var.name}-bastion"
-  }
+              EOF
+             
 }
+
+
