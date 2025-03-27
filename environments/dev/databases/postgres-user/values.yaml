@@ -1,0 +1,32 @@
+global:
+  storageClass: ""
+
+fullnameOverride: postgres-user
+
+architecture: standalone
+
+auth:
+  enablePostgresUser: true
+  postgresPassword: mysecretpassword
+  username: myuser
+  password: myuserpassword
+  database: mydatabase
+
+primary:
+  persistence:
+    enabled: true
+    existingClaim: postgres-user-pvc  # terraform으로 생성한 PVC 이름과 일치시켜야 함
+    size: 20Gi
+    storageClass: ""
+
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 500m
+
+service:
+  type: ClusterIP
+  port: 5432
