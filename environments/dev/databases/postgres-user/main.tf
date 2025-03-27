@@ -1,10 +1,23 @@
+terraform {
+  required_providers {
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.36.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "us-east-1"
 }
 
+provider "kubernetes" {
+  config_path = "C:/Users/soldesk/.kube/config"
+}
+
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config" # or use data from terraform_remote_state if in bastion
+    config_path = "C:/Users/soldesk/.kube/config"
   }
 }
 

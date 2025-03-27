@@ -1,6 +1,5 @@
 # Terraform 관련
 .terraform/
-.terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.*
 terraform.tfvars
