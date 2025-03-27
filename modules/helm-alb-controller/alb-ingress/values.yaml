@@ -2,7 +2,10 @@ replicaCount: 2
 
 image:
   repository: 602401143452.dkr.ecr.us-east-1.amazonaws.com/amazon/aws-load-balancer-controller
+  tag: "v2.7.1"
 
 serviceAccount:
-  create: false
+  create: true
   name: aws-load-balancer-controller
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::816069155414:role/wms-alb-controller-irsa

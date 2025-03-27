@@ -10,18 +10,22 @@ resource "helm_release" "alb_controller" {
   }
 
   set {
-    name  = "region"
-    value = var.region
-  }
-
-  set {
     name  = "vpcId"
     value = var.vpc_id
   }
 
-set {
-  name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-  value = var.irsa_role_arn
-}
+  set {
+    name  = "serviceAccount.create"
+    value = "true"
+  }
 
+  set {
+    name  = "serviceAccount.name"
+    value = "aws-load-balancer-controller"
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = var.irsa_role_arn
+  }
 }

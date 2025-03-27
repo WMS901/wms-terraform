@@ -22,7 +22,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "v2.7.1" }}"
           args:
             - --cluster-name={{ .Values.clusterName }}
-            - --region={{ .Values.region }}
             - --vpc-id={{ .Values.vpcId }}
             - --ingress-class=alb
           ports:
