@@ -22,3 +22,13 @@ output "bastion_sg_id" {
   value       = aws_security_group.bastion.id
   description = "Security group ID that allows Bastion to connect to EKS nodes"
 }
+
+output "oidc_provider_arn" {
+  description = "OIDC provider ARN for IRSA"
+  value       = module.eks.oidc_provider_arn
+}
+
+output "oidc_provider_url" {
+  description = "OIDC provider URL for IRSA"
+  value       = module.eks.oidc_provider
+}

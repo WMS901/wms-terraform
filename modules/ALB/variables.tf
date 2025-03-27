@@ -1,7 +1,7 @@
+# /modules/ALB/variables.tf
 variable "name" {
   description = "ALB 이름"
   type        = string
-  default     = "aws-alb"
 }
 
 variable "security_group_id" {
@@ -14,4 +14,14 @@ variable "target_port" {
   description = "EKS NodePort 포트"
   type        = number
   default     = 30000
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
+variable "public_subnet_ids" {
+  description = "ALB가 위치할 퍼블릭 서브넷 ID 목록"
+  type        = list(string)
 }

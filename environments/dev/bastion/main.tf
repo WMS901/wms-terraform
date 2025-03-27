@@ -70,8 +70,21 @@ module "bastion" {
               cd /
               git clone https://github.com/WMS901/aws-helm-charts.git
               chown -R ec2-user:ec2-user /aws-helm-charts
+
+              # ALB Controller 관련 리소스 설정
+              kubectl apply -f https://raw.githubusercontent.com/aws/eks-charts/master/stable/aws-load-balancer-controller/crds/crds.yaml
+
+              curl -o crds.yaml https://raw.githubusercontent.com/aws/eks-charts/master/stable/aws-load-balancer-controller/crds/crds.yaml
+              kubectl apply -f crds.yaml
+
+              openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout tls.key -out tls.crt \
+                -subj "/CN=webhook.aws-load-balancer-controller/O=alb"
+
+              kubectl create secret tls aws-load-balancer-tls \
+                --cert=tls.crt --key=tls.key -n kube-system
               EOF
-             
+
 }
 
 
