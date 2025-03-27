@@ -25,6 +25,7 @@ spec:
             - --aws-region={{ .Values.region }}
             - --aws-vpc-id={{ .Values.vpcId }}
             - --ingress-class=alb
+            - --webhook-cert-dir=/tmp/k8s-webhook-server/serving-certs
           ports:
             - name: webhook-server
               containerPort: 9443
@@ -43,3 +44,11 @@ spec:
               scheme: HTTP
             initialDelaySeconds: 10
             periodSeconds: 30
+          volumeMounts:
+            - name: webhook-cert
+              mountPath: /tmp/k8s-webhook-server/serving-certs
+              readOnly: true
+      volumes:
+        - name: webhook-cert
+          secret:
+            secretName: aws-load-balancer-tls
