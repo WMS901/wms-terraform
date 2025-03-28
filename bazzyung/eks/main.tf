@@ -1,3 +1,13 @@
+provider "kubernetes" {
+  config_path = "C:/Users/soldesk/.kube/config"
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = "C:/Users/soldesk/.kube/config"
+  }
+}
+
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
@@ -8,7 +18,7 @@ data "terraform_remote_state" "vpc" {
 }
 
 resource "aws_security_group" "bastion" {
-  name        = "wms-bastion-sg"
+  name        = "wms-bastion-sg-bazzy"
   description = "Allow bastion to access EKS nodes"
   vpc_id      = data.terraform_remote_state.vpc.outputs.vpc_id
 
@@ -27,7 +37,7 @@ resource "aws_security_group" "bastion" {
   }
 
   tags = {
-    Name = "wms-bastion-sg"
+    Name = "wms-bastion-sg-bazzy"
   }
 }
 
@@ -77,7 +87,8 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    wms-node-group = {
+    bazzyung-node-group = {
+      name           = "bazzyung-node-group"
       ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["t3.medium"]
       desired_size   = 2
@@ -90,7 +101,7 @@ module "eks" {
       }
 
       tags = {
-        Name = "eks-wms-node"
+        Name = "eks-bazzyung-node"
       }
     }
   }
@@ -136,4 +147,20 @@ resource "kubernetes_storage_class" "ebs_sc" {
 
   reclaim_policy        = "Retain"
   volume_binding_mode   = "WaitForFirstConsumer"
+}
+
+module "kafka" {
+  source = "../../modules/helm"
+
+  release_name = "kafka"
+  namespace    = "kafka"
+  create_namespace = true
+
+  repository   = "https://charts.bitnami.com/bitnami"
+  chart        = "kafka"
+  chart_version = "26.6.2"
+
+  values = [
+    file("${path.module}/kafka-values.yaml")
+  ]
 }

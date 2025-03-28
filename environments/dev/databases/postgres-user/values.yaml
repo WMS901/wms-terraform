@@ -1,60 +1,21 @@
-global:
-  storageClass: ""
-
 fullnameOverride: postgres-user
 
-architecture: standalone
-
 auth:
-  enablePostgresUser: true
-  postgresPassword: soldesk
   username: user1
   password: user1
   database: user_db
 
 primary:
+  persistence:
+    existingClaim: postgres-user-pvc
+    storageClass: ""
+    size: 20Gi
+
   containerPorts:
     postgresql: 5433
 
   extendedConfiguration: |
     port = 5433
 
-  extraEnvVars:
-    - name: POSTGRESQL_PORT_NUMBER
-      value: "5433"
-      
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-    port: 5433
-
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 5
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 6
-    successThreshold: 1
-    port: 5433
-
-  persistence:
-    enabled: true
-    existingClaim: postgres-user-pvc
-    size: 20Gi
-    storageClass: ""
-
-  resources:
-    requests:
-      memory: 512Mi
-      cpu: 250m
-    limits:
-      memory: 1Gi
-      cpu: 500m
-
 service:
-  type: ClusterIP
   port: 5433

@@ -23,8 +23,8 @@ provider "helm" {
 
 data "aws_instances" "eks_nodes" {
   filter {
-    name   = "tag:eks:nodegroup-name"
-    values = ["wms-node-group"]
+    name   = "tag:Name"
+    values = ["bazzyung-node-group"]
   }
 }
 
@@ -32,8 +32,14 @@ data "aws_instance" "selected" {
   instance_id = element(data.aws_instances.eks_nodes.ids, 0)
 }
 
+resource "kubernetes_namespace" "postgres" {
+  metadata {
+    name = "postgres"
+  }
+}
+
 module "ebs" {
-  source            = "../../../../modules/ebs"
+  source            = "../../../modules/ebs"
   name              = "postgres-user-ebs"
   availability_zone = data.aws_instance.selected.availability_zone
   size              = 20
@@ -95,18 +101,19 @@ resource "kubernetes_persistent_volume_claim" "postgres_user_pvc" {
 }
 
 module "postgres-user" {
-  source = "../../../../modules/helm"
+  source = "../../../modules/helm"
 
   release_name = "postgres-user"
   namespace    = "postgres"
+  create_namespace = true
 
   repository   = "https://wms901.github.io/aws-helm-charts/databases"
   chart        = "postgres-user"
   chart_version = "1.0.0"
 
-  values = [
-    file("${path.module}/values.yaml")
-  ]
+#   values = [
+#     file("${path.module}/values.yaml")
+#   ]
 
   depends_on = [
     kubernetes_persistent_volume_claim.postgres_user_pvc

@@ -1,0 +1,23 @@
+replicaCount: 2
+
+auth:
+  clientProtocol: plaintext
+  interBrokerProtocol: plaintext
+
+zookeeper:
+  enabled: true
+  replicaCount: 3
+  persistence:
+    enabled: false
+
+persistence:
+  enabled: false
+
+config:
+  log.retention.hours: "168"
+  offsets.topic.replication.factor: 2
+  transaction.state.log.replication.factor: 2
+  transaction.state.log.min.isr: 1
+
+service:
+  type: ClusterIP
