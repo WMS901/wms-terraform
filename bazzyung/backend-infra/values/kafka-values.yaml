@@ -50,7 +50,7 @@ listeners:
     name: CLIENT
     containerPort: 9092
     protocol: PLAINTEXT
-    sslClientAuth: ""      # no SSL client certs required
+    sslClientAuth: ""
   interbroker:
     name: INTERNAL
     containerPort: 9094
@@ -61,7 +61,6 @@ listeners:
     containerPort: 9095
     protocol: PLAINTEXT
     sslClientAuth: ""
-  # controller listener (not used in ZK mode, but included for completeness):
   controller:
     name: CONTROLLER
     containerPort: 9093

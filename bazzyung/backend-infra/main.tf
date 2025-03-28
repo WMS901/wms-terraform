@@ -37,6 +37,22 @@ module "kafka" {
   chart_version = "26.6.2"
 
   values = [
-    file("${path.module}/kafka-values.yaml")
+    file("${path.module}/values/kafka-values.yaml")
+  ]
+}
+
+module "argocd" {
+  source = "../../modules/helm"
+
+  release_name  = "argocd"
+  namespace     = "argocd"
+  create_namespace = true
+
+  repository    = "https://argoproj.github.io/argo-helm"
+  chart         = "argo-cd"
+  chart_version = "5.51.6"
+
+  values = [
+    file("${path.module}/values/argocd-values.yaml")
   ]
 }
