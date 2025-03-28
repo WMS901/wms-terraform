@@ -77,9 +77,9 @@ module "eks" {
     default = {
       ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["t3.medium"]
-      desired_size   = 1
-      min_size       = 1
-      max_size       = 2
+      desired_size   = 2
+      min_size       = 2
+      max_size       = 3
       key_name       = var.key_name
     }
   }
