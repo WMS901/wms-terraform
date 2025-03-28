@@ -111,10 +111,6 @@ module "postgres-user" {
   chart        = "postgres-user"
   chart_version = "1.0.0"
 
-#   values = [
-#     file("${path.module}/values.yaml")
-#   ]
-
   depends_on = [
     kubernetes_persistent_volume_claim.postgres_user_pvc
   ]

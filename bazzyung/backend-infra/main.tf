@@ -8,6 +8,23 @@ provider "helm" {
   }
 }
 
+# resource "kubernetes_storage_class" "ebs_sc" {
+#   metadata {
+#     name = "ebs-sc"
+#   }
+
+#   storage_provisioner = "ebs.csi.aws.com"
+
+#   parameters = {
+#     type = "gp3"
+#   }
+
+#   reclaim_policy        = "Retain"
+#   volume_binding_mode   = "WaitForFirstConsumer"
+
+#   depends_on = [module.eks]
+# }
+
 module "kafka" {
   source = "../../modules/helm"
 
@@ -17,9 +34,9 @@ module "kafka" {
 
   repository   = "https://charts.bitnami.com/bitnami"
   chart        = "kafka"
-  chart_version = "26.3.3"
+  chart_version = "26.6.2"
 
   values = [
-    file("${path.module}/values.yaml")
+    file("${path.module}/kafka-values.yaml")
   ]
 }
