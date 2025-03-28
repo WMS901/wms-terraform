@@ -67,6 +67,9 @@ module "eks" {
     kube-proxy             = {}
     vpc-cni                = {}
     eks-pod-identity-agent = {}
+    # aws-ebs-csi-driver = {
+    #   most_recent = true
+    # }
   }
 
   eks_managed_node_group_defaults = {
@@ -81,6 +84,10 @@ module "eks" {
       min_size       = 1
       max_size       = 2
       key_name       = var.key_name
+
+      iam_role_additional_policies = {
+        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
     }
   }
 
@@ -110,4 +117,19 @@ module "eks" {
     Environment = "dev"
     Terraform   = "true"
   }
+}
+
+resource "kubernetes_storage_class" "ebs_sc" {
+  metadata {
+    name = "ebs-sc"
+  }
+
+  storage_provisioner = "ebs.csi.aws.com"
+
+  parameters = {
+    type = "gp3"
+  }
+
+  reclaim_policy        = "Retain"
+  volume_binding_mode   = "WaitForFirstConsumer"
 }

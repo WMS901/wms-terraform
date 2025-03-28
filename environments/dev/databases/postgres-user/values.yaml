@@ -7,15 +7,43 @@ architecture: standalone
 
 auth:
   enablePostgresUser: true
-  postgresPassword: mysecretpassword
-  username: myuser
-  password: myuserpassword
-  database: mydatabase
+  postgresPassword: soldesk
+  username: user1
+  password: user1
+  database: user_db
 
 primary:
+  containerPorts:
+    postgresql: 5433
+
+  extendedConfiguration: |
+    port = 5433
+
+  extraEnvVars:
+    - name: POSTGRESQL_PORT_NUMBER
+      value: "5433"
+      
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    port: 5433
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+    port: 5433
+
   persistence:
     enabled: true
-    existingClaim: postgres-user-pvc  # terraform으로 생성한 PVC 이름과 일치시켜야 함
+    existingClaim: postgres-user-pvc
     size: 20Gi
     storageClass: ""
 
