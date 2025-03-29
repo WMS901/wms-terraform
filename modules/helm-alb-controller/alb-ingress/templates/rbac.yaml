@@ -4,12 +4,16 @@ metadata:
   name: aws-load-balancer-controller
 rules:
   - apiGroups: [""]
-    resources: ["pods", "services", "endpoints", "nodes", "namespaces"]
-    verbs: ["get", "list", "watch"]
+    resources: ["pods", "services", "endpoints", "nodes", "namespaces", "events", "configmaps"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
 
   - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses/status"] # ✅ ALB가 ingress 상태를 patch할 수 있도록 추가
+    verbs: ["patch"]
 
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingressclasses"]
@@ -18,6 +22,10 @@ rules:
   - apiGroups: ["elbv2.k8s.aws"]
     resources: ["targetgroupbindings", "ingressclassparams"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "create", "update"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
