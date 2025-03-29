@@ -25,8 +25,12 @@ resource "aws_subnet" "public_subnet_1" {
 
   tags = {
     Name = "${var.name}-public-subnet-1"
+    "kubernetes.io/cluster/wms-cluster" = "owned"
+    "kubernetes.io/role/elb"            = "1"
   }
 }
+
+
 
 resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.main.id
@@ -36,6 +40,8 @@ resource "aws_subnet" "public_subnet_2" {
 
   tags = {
     Name = "${var.name}-public-subnet-2"
+    "kubernetes.io/cluster/wms-cluster" = "owned"
+    "kubernetes.io/role/elb"            = "1"
   }
 }
 
