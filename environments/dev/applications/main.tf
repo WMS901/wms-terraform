@@ -35,7 +35,7 @@ terraform {
 # }
 
 module "kafka" {
-  source = "../../modules/helm"
+  source = "../../../modules/helm"
 
   release_name = "kafka"
   namespace    = "kafka"
@@ -51,7 +51,7 @@ module "kafka" {
 }
 
 module "argocd" {
-  source = "../../modules/helm"
+  source = "../../../modules/helm"
 
   release_name  = "argocd"
   namespace     = "argocd"
@@ -64,6 +64,21 @@ module "argocd" {
   values = [
     file("${path.module}/values/argocd-values.yaml")
   ]
+}
+
+resource "null_resource" "wait_for_argocd_crd" {
+  provisioner "local-exec" {
+    command = <<EOT
+      echo "Waiting for Argo CD CRDs to be ready..."
+      for i in {1..30}; do
+        kubectl get crd applications.argoproj.io && break
+        echo "Waiting..."
+        sleep 5
+      done
+    EOT
+  }
+
+  depends_on = [module.argocd]
 }
 
 resource "kubernetes_namespace" "wms" {
@@ -79,5 +94,5 @@ resource "kubernetes_namespace" "wms" {
 
 resource "kubectl_manifest" "inventory_app" {
   yaml_body  = file("${path.module}/argocd-apps/inventory-application.yaml")
-  depends_on = [module.argocd]
+  depends_on = [null_resource.wait_for_argocd_crd]
 }

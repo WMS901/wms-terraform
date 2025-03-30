@@ -36,11 +36,10 @@ resource "kubernetes_namespace" "postgres" {
   metadata {
     name = "postgres"
   }
-  
+
   lifecycle {
-    ignore_changes = [
-      metadata[0].name
-    ]
+    prevent_destroy = false
+    ignore_changes = [metadata[0].labels]
   }
 }
 

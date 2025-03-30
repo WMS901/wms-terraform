@@ -1,0 +1,75 @@
+server:
+  service:
+    type: LoadBalancer
+
+  # future-proof: ingress 사용 시 구조 미리 포함
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts:
+      - argocd.example.com
+    tls: []
+
+  # 추후 Node taint 대응 가능하도록 tolerations 구조 유지
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  autoscaling:
+    enabled: false
+
+repoServer:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+applicationController:
+  tolerations:
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  # future-proof: 고가용성 replica 구성 준비
+  replicas: 1
+
+# future-proof: SSO 연동 준비
+dex:
+  enabled: false
+
+# future-proof: 알림 연동 준비
+notifications:
+  enabled: false
+
+# future-proof: ApplicationSet을 통한 여러 서비스 자동 배포 대비
+applicationSet:
+  enabled: false
+
+# Prometheus metrics 연동 대비
+metrics:
+  enabled: false

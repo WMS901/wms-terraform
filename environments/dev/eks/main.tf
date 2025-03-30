@@ -78,6 +78,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     wms-node-group = {
+      name           = "wms-node-group"
       ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["t3.medium"]
       desired_size   = 2
@@ -121,19 +122,4 @@ module "eks" {
     Environment = "dev"
     Terraform   = "true"
   }
-}
-
-resource "kubernetes_storage_class" "ebs_sc" {
-  metadata {
-    name = "ebs-sc"
-  }
-
-  storage_provisioner = "ebs.csi.aws.com"
-
-  parameters = {
-    type = "gp3"
-  }
-
-  reclaim_policy        = "Retain"
-  volume_binding_mode   = "WaitForFirstConsumer"
 }

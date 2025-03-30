@@ -53,6 +53,9 @@ module "bastion" {
               # ec2-user로 kubeconfig 구성
               su - ec2-user -c 'aws eks update-kubeconfig --region us-east-1 --name wms-cluster'
 
+              # kubeconfig 설정
+              export KUBECONFIG=/home/ec2-user/.kube/config
+              
               # eksctl 설치
               curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" -o eksctl.tar.gz
               tar -xzf eksctl.tar.gz
@@ -72,11 +75,13 @@ module "bastion" {
               chown -R ec2-user:ec2-user /aws-helm-charts
 
               # ALB Controller 관련 리소스 설정
-              kubectl apply -f https://raw.githubusercontent.com/aws/eks-charts/master/stable/aws-load-balancer-controller/crds/crds.yaml
+              # kubectl apply -f https://raw.githubusercontent.com/aws/eks-charts/master/stable/aws-load-balancer-controller/crds/crds.yaml
 
               curl -o crds.yaml https://raw.githubusercontent.com/aws/eks-charts/master/stable/aws-load-balancer-controller/crds/crds.yaml
               kubectl apply -f crds.yaml
+              
 
+              # TLS 인증서 생성 및 Secret 생성
               openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
                 -keyout tls.key -out tls.crt \
                 -subj "/CN=webhook.aws-load-balancer-controller/O=alb"
