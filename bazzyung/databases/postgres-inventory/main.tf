@@ -36,6 +36,12 @@ resource "kubernetes_namespace" "postgres" {
   metadata {
     name = "postgres"
   }
+  
+  lifecycle {
+    ignore_changes = [
+      metadata[0].name
+    ]
+  }
 }
 
 module "ebs" {
@@ -109,13 +115,9 @@ module "postgres-inventory" {
   repository   = "https://wms901.github.io/aws-helm-charts/databases"
   chart        = "postgres-inventory"
   chart_version = "1.0.0"
-  create_namespace = true
-
-#   values = [
-#     file("${path.module}/values.yaml")
-#   ]
+  create_namespace = false
 
   depends_on = [
-    kubernetes_persistent_volume_claim.postgres_user_pvc
+    kubernetes_persistent_volume_claim.postgres_inventory_pvc
   ]
 }

@@ -24,7 +24,7 @@ provider "helm" {
 data "aws_instances" "eks_nodes" {
   filter {
     name   = "tag:Name"
-    values = ["bazzyung-node-group"]
+    values = ["wms-node-group"]
   }
 }
 
@@ -45,17 +45,17 @@ resource "kubernetes_namespace" "postgres" {
 }
 
 module "ebs" {
-  source            = "../../../modules/ebs"
-  name              = "postgres-user-ebs"
+  source            = "../../../../modules/ebs"
+  name              = "postgres-inventory-ebs"
   availability_zone = data.aws_instance.selected.availability_zone
   size              = 20
   volume_type       = "gp3"
   encrypted         = true
 }
 
-resource "kubernetes_persistent_volume" "postgres_user_pv" {
+resource "kubernetes_persistent_volume" "postgres_inventory_pv" {
   metadata {
-    name = "postgres-user-pv"
+    name = "postgres-inventory-pv"
   }
 
   spec {
@@ -87,9 +87,9 @@ resource "kubernetes_persistent_volume" "postgres_user_pv" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "postgres_user_pvc" {
+resource "kubernetes_persistent_volume_claim" "postgres_inventory_pvc" {
   metadata {
-    name      = "postgres-user-pvc"
+    name      = "postgres-inventory-pvc"
     namespace = "postgres"
   }
 
@@ -102,22 +102,22 @@ resource "kubernetes_persistent_volume_claim" "postgres_user_pvc" {
       }
     }
 
-    volume_name = kubernetes_persistent_volume.postgres_user_pv.metadata[0].name
+    volume_name = kubernetes_persistent_volume.postgres_inventory_pv.metadata[0].name
   }
 }
 
-module "postgres-user" {
-  source = "../../../modules/helm"
+module "postgres-inventory" {
+  source = "../../../../modules/helm"
 
-  release_name = "postgres-user"
+  release_name = "postgres-inventory"
   namespace    = "postgres"
-  create_namespace = false
 
   repository   = "https://wms901.github.io/aws-helm-charts/databases"
-  chart        = "postgres-user"
+  chart        = "postgres-inventory"
   chart_version = "1.0.0"
+  create_namespace = false
 
   depends_on = [
-    kubernetes_persistent_volume_claim.postgres_user_pvc
+    kubernetes_persistent_volume_claim.postgres_inventory_pvc
   ]
 }
