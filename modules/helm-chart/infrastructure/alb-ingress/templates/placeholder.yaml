@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: placeholder
-  namespace: {{ .Release.Namespace }}
-data:
-  dummy: "true"

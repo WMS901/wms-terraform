@@ -89,7 +89,6 @@ module "bastion" {
               kubectl create secret tls aws-load-balancer-tls \
                 --cert=tls.crt --key=tls.key -n kube-system
               EOF
-
 }
 
 
