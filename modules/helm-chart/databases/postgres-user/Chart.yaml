@@ -1,6 +1,0 @@
-apiVersion: v2
-name: postgres-user
-description: A Helm chart for PostgreSQL user database
-version: 1.0.0
-appVersion: "15"
-name: postgres-user
