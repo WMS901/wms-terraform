@@ -62,7 +62,7 @@ resource "aws_cloudfront_distribution" "cdn" {
       }
     }
   }
-
+# dddddd
   custom_error_response {
     error_code            = 403
     response_code         = 200
