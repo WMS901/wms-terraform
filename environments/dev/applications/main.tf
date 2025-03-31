@@ -84,3 +84,8 @@ resource "kubectl_manifest" "inventory_app" {
   yaml_body  = file("${path.module}/argocd-apps/inventory-application.yaml")
   depends_on = [null_resource.wait_for_argocd_crd]
 }
+
+resource "kubectl_manifest" "inbound_app" {
+  yaml_body  = file("${path.module}/argocd-apps/inbound-application.yaml")
+  depends_on = [null_resource.wait_for_argocd_crd]
+}
