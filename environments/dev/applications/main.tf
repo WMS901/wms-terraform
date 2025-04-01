@@ -17,6 +17,36 @@ terraform {
   }
 }
 
+# data "terraform_remote_state" "eks" {
+#   backend = "s3"
+#   config = {
+#     bucket = "sol-wms-terraform-states"
+#     key    = "eks/terraform.tfstate"
+#     region = "us-east-1"
+#   }
+# }
+
+# data "terraform_remote_state" "alb" {
+#   backend = "s3"
+#   config = {
+#     bucket = "sol-wms-terraform-states"
+#     key    = "alb/terraform.tfstate"
+#     region = "us-east-1"
+#   }
+# }
+
+# resource "aws_security_group_rule" "alb_to_nodes_health_check" {
+#   type                     = "ingress"
+#   from_port                = 1040
+#   to_port                  = 1051
+#   protocol                 = "tcp"
+  
+#   security_group_id        = data.terraform_remote_state.eks.outputs.worker_node_sg_id
+#   source_security_group_id = data.terraform_remote_state.alb.outputs.alb_sg_id
+
+#   description              = "Allow ALB health checks to EKS nodes (for ports 1040-1051)"
+# }
+
 module "kafka" {
   source = "../../../modules/helm"
 
@@ -75,8 +105,8 @@ resource "kubernetes_namespace" "wms" {
   }
 }
 
-resource "kubectl_manifest" "outbound_app" {
-  yaml_body  = file("${path.module}/argocd-apps/outbound-application.yaml")
+resource "kubectl_manifest" "inbound_app" {
+  yaml_body  = file("${path.module}/argocd-apps/inbound-application.yaml")
   depends_on = [null_resource.wait_for_argocd_crd]
 }
 
@@ -85,7 +115,7 @@ resource "kubectl_manifest" "inventory_app" {
   depends_on = [null_resource.wait_for_argocd_crd]
 }
 
-resource "kubectl_manifest" "inbound_app" {
-  yaml_body  = file("${path.module}/argocd-apps/inbound-application.yaml")
+resource "kubectl_manifest" "outbound_app" {
+  yaml_body  = file("${path.module}/argocd-apps/outbound-application.yaml")
   depends_on = [null_resource.wait_for_argocd_crd]
 }

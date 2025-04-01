@@ -32,3 +32,7 @@ output "oidc_provider_url" {
   description = "OIDC provider URL for IRSA"
   value       = module.eks.oidc_provider
 }
+
+output "worker_node_sg_id" {
+  value = module.eks.node_security_group_id
+}
