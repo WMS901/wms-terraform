@@ -17,14 +17,14 @@ terraform {
   }
 }
 
-# data "terraform_remote_state" "eks" {
-#   backend = "s3"
-#   config = {
-#     bucket = "sol-wms-terraform-states"
-#     key    = "eks/terraform.tfstate"
-#     region = "us-east-1"
-#   }
-# }
+data "terraform_remote_state" "eks" {
+  backend = "s3"
+  config = {
+    bucket = "sol-wms-terraform-states"
+    key    = "eks/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
 
 # data "terraform_remote_state" "alb" {
 #   backend = "s3"
@@ -42,7 +42,7 @@ terraform {
 #   protocol                 = "tcp"
   
 #   security_group_id        = data.terraform_remote_state.eks.outputs.worker_node_sg_id
-#   source_security_group_id = data.terraform_remote_state.alb.outputs.alb_sg_id
+#   # source_security_group_id = data.terraform_remote_state.alb.outputs.alb_sg_id
 
 #   description              = "Allow ALB health checks to EKS nodes (for ports 1040-1051)"
 # }
@@ -105,13 +105,18 @@ resource "kubernetes_namespace" "wms" {
   }
 }
 
-resource "kubectl_manifest" "inbound_app" {
-  yaml_body  = file("${path.module}/argocd-apps/inbound-application.yaml")
+resource "kubectl_manifest" "user_app" {
+  yaml_body  = file("${path.module}/argocd-apps/user-application.yaml")
   depends_on = [null_resource.wait_for_argocd_crd]
 }
 
 resource "kubectl_manifest" "inventory_app" {
   yaml_body  = file("${path.module}/argocd-apps/inventory-application.yaml")
+  depends_on = [null_resource.wait_for_argocd_crd]
+}
+
+resource "kubectl_manifest" "inbound_app" {
+  yaml_body  = file("${path.module}/argocd-apps/inbound-application.yaml")
   depends_on = [null_resource.wait_for_argocd_crd]
 }
 

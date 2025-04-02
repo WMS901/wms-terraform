@@ -36,7 +36,7 @@ resource "kubernetes_namespace" "postgres" {
   metadata {
     name = "postgres"
   }
-  
+
   lifecycle {
     ignore_changes = [
       metadata[0].name
@@ -44,11 +44,28 @@ resource "kubernetes_namespace" "postgres" {
   }
 }
 
+resource "kubernetes_storage_class" "gp3" {
+  metadata {
+    name = "gp3"
+    annotations = {
+      "storageclass.kubernetes.io/is-default-class" = "true"
+    }
+  }
+
+  storage_provisioner = "ebs.csi.aws.com"
+  reclaim_policy      = "Delete"
+  volume_binding_mode = "WaitForFirstConsumer"
+
+  parameters = {
+    type = "gp3"
+  }
+}
+
 module "ebs" {
   source            = "../../../../modules/ebs"
   name              = "postgres-user-ebs"
   availability_zone = data.aws_instance.selected.availability_zone
-  size              = 20
+  size              = 10
   volume_type       = "gp3"
   encrypted         = true
 }
@@ -60,11 +77,12 @@ resource "kubernetes_persistent_volume" "postgres_user_pv" {
 
   spec {
     capacity = {
-      storage = "20Gi"
+      storage = "10Gi"
     }
 
-    access_modes = ["ReadWriteOnce"]
-    persistent_volume_reclaim_policy = "Retain"
+    access_modes                         = ["ReadWriteOnce"]
+    persistent_volume_reclaim_policy    = "Retain"
+    storage_class_name                  = "gp3" # Important for manual binding
 
     persistent_volume_source {
       aws_elastic_block_store {
@@ -72,7 +90,7 @@ resource "kubernetes_persistent_volume" "postgres_user_pv" {
         fs_type   = "ext4"
       }
     }
-    
+
     node_affinity {
       required {
         node_selector_term {
@@ -98,7 +116,7 @@ resource "kubernetes_persistent_volume_claim" "postgres_user_pvc" {
 
     resources {
       requests = {
-        storage = "20Gi"
+        storage = "10Gi"
       }
     }
 
@@ -107,15 +125,14 @@ resource "kubernetes_persistent_volume_claim" "postgres_user_pvc" {
 }
 
 module "postgres-user" {
-  source = "../../../../modules/helm"
-
-  release_name = "postgres-user"
-  namespace    = "postgres"
+  source           = "../../../../modules/helm"
+  release_name     = "postgres-user"
+  namespace        = "postgres"
   create_namespace = false
 
-  repository   = "https://wms901.github.io/aws-helm-charts/databases"
-  chart        = "postgres-user"
-  chart_version = "1.0.0"
+  repository     = "https://wms901.github.io/aws-helm-charts/databases"
+  chart          = "postgres-user"
+  chart_version  = "1.0.0"
 
   depends_on = [
     kubernetes_persistent_volume_claim.postgres_user_pvc

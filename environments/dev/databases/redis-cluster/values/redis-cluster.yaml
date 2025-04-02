@@ -1,0 +1,13 @@
+usePassword: true
+existingSecret: "redis-cluster"
+existingSecretPasswordKey: "redis-password"
+usePasswordFile: false
+
+cluster:
+  enabled: true
+  nodes: 6
+
+persistence:
+  enabled: true
+  storageClass: "gp3"
+  size: 8Gi
