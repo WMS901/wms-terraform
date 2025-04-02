@@ -1,0 +1,13 @@
+clusterName: ${cluster_name}
+region: ${region}
+serviceAccount:
+  create: true
+  name: cloudwatch-agent
+  annotations:
+    eks.amazonaws.com/role-arn: ${role_arn}
+
+logs:
+  enabled: true
+
+metrics:
+  enabled: true
