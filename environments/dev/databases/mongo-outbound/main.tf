@@ -64,6 +64,7 @@ resource "kubernetes_persistent_volume" "mongo_outbound_pv" {
 
     access_modes = ["ReadWriteOnce"]
     persistent_volume_reclaim_policy = "Retain"
+    storage_class_name                  = "gp3"
 
     persistent_volume_source {
       aws_elastic_block_store {

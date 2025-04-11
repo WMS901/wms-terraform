@@ -48,7 +48,7 @@ module "ebs" {
   source            = "../../../../modules/ebs"
   name              = "postgres-inventory-ebs"
   availability_zone = data.aws_instance.selected.availability_zone
-  size              = 20
+  size              = 10
   volume_type       = "gp3"
   encrypted         = true
 }
@@ -60,11 +60,12 @@ resource "kubernetes_persistent_volume" "postgres_inventory_pv" {
 
   spec {
     capacity = {
-      storage = "20Gi"
+      storage = "10Gi"
     }
 
     access_modes = ["ReadWriteOnce"]
     persistent_volume_reclaim_policy = "Retain"
+    storage_class_name                  = "gp3"
 
     persistent_volume_source {
       aws_elastic_block_store {
@@ -98,7 +99,7 @@ resource "kubernetes_persistent_volume_claim" "postgres_inventory_pvc" {
 
     resources {
       requests = {
-        storage = "20Gi"
+        storage = "10Gi"
       }
     }
 
